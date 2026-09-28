@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="../Vrmac.props" />
+	<PropertyGroup>
+		<RootNamespace>Vrmac</RootNamespace>
+	</PropertyGroup>
+</Project>

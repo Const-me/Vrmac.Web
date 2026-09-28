@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="../Vrmac.props" />
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.0" />
+	</ItemGroup>
+</Project>

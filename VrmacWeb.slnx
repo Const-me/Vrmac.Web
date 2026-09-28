@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="AssemblyInfoShared.cs" />
+    <File Path="Readme.md" />
+    <File Path="Security.md" />
+    <File Path="Vrmac.props" />
+  </Folder>
+  <Project Path="GeoIpTest/GeoIpTest.csproj" />
+  <Project Path="Vrmac.Acme/Vrmac.Acme.csproj" />
+  <Project Path="Vrmac.Admin/Vrmac.Admin.csproj" />
+  <Project Path="Vrmac.GeoIP/Vrmac.GeoIP.csproj" />
+  <Project Path="Vrmac.Html/Vrmac.Html.csproj" />
+  <Project Path="Vrmac.HtmlCompiler/Vrmac.HtmlCompiler.csproj" />
+  <Project Path="Vrmac.Mapper/Vrmac.Mapper.csproj" />
+  <Project Path="Vrmac.Markdown/Vrmac.Markdown.csproj" />
+  <Project Path="Vrmac.MaxMind/Vrmac.MaxMind.csproj" />
+  <Project Path="Vrmac.Pwned/Vrmac.Pwned.csproj" />
+  <Project Path="Vrmac.PwnedFilter/Vrmac.PwnedFilter.csproj" />
+  <Project Path="Vrmac.RateLimits/Vrmac.RateLimits.csproj" />
+  <Project Path="Vrmac.Security/Vrmac.Security.csproj" />
+  <Project Path="Vrmac.Uploads/Vrmac.Uploads.csproj" />
+  <Project Path="Vrmac.Utils/Vrmac.Utils.csproj" />
+</Solution>

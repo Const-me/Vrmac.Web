@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="../Vrmac.props" />
+	<ItemGroup>
+		<PackageReference Include="SSH.NET" Version="2026.0.0" />
+	</ItemGroup>
+</Project>

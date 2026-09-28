@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="../Vrmac.props" />
+	<ItemGroup>
+		<PackageReference Include="MySqlConnector" Version="2.5.0" />
+	</ItemGroup>
+</Project>

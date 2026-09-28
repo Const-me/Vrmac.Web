@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="../Vrmac.props" />
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<AssemblyName>PwnedFilter</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Vrmac.Pwned\Vrmac.Pwned.csproj" />
+		<ProjectReference Include="..\Vrmac.Utils\Vrmac.Utils.csproj" />
+		<Compile Include="..\Vrmac.Pwned\BloomFilterHashes.cs" Link="BloomFilterHashes.cs" />
+	</ItemGroup>
+
+</Project>
