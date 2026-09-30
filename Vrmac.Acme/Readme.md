@@ -11,7 +11,7 @@ tested with `TrimMode=Full` trimming option.
 The public API is based on async-await.
 The implementation relies on the thread pool implemented by the .NET runtime.
 
-The main entry point is `ACME` static class.
+The main entry point is `AcmeV2.ACME` static class.
 Perhaps the most important member of that class is `create` factory function.
 The function fetches and parses [directory](https://www.rfc-editor.org/info/rfc8555/#section-7.1.1) with endpoints,
 and returns an object which acts as a callable proxy for the JSON RPC APIs implemented by the server.
