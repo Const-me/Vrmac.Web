@@ -3,8 +3,15 @@
 This library implements a .NET 10 client for
 [ACME v2](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment#API_version_2) protocol.
 
+The library only supports [http-01](https://www.rfc-editor.org/info/rfc8555/#section-8.3) verification.
+If you need wildcard certificates, consider forking this library and implementing the missing feature.
+
 The library is compatible with [Native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/?tabs=windows%2Cnet9plus),
 tested with `TrimMode=Full` trimming option.
+
+When evaluating and testing things, consider let’s encrypt [staging environment](https://letsencrypt.org/docs/staging-environment/).
+However, based on my tests these environments are behaving differently; I ran into differences in server logic, not just rate limits.
+Don’t assume a working test with staging guarantees great success with the production ACME server.
 
 ## Usage
 
@@ -14,7 +21,10 @@ Perhaps the most important member of that class is `create` factory function.
 The function fetches and parses [directory](https://www.rfc-editor.org/info/rfc8555/#section-7.1.1) with endpoints,
 and returns an object which acts as a callable proxy for the JSON RPC APIs implemented by the server.
 
-Here’s the steps necessary to obtain and renew these certificates.
+Here are the steps necessary to obtain and renew TLS certificates.
+
+For simplicity, the examples are using `CancellationToken.None`.
+For production use, you’d want to pass a better cancellation token.
 
 ### ACME Directory
 
@@ -26,7 +36,7 @@ using acmeClient = await ACME.create( "https://acme-v02.api.letsencrypt.org/dire
 
 ### Initial Setup
 
-To register a new account, call `await iAcmeClient.register` RPC. The argument is the array of contact e-mails.
+To register a new account, call `await iAcmeClient.register` RPC. The argument is array of contact e-mails.
 
 Call `AccountInfo.serialise()`. Encrypt the byte array with `SymmetricCrypto.encrypt` as it contains a private key.
 Save the bytes somewhere, you will need that data every time you renew your certificates.
@@ -34,12 +44,12 @@ Save the bytes somewhere, you will need that data every time you renew your cert
 To generate a new certificate key, call `ACME.generateCertificateKey()`.
 Export private key with [ExportECPrivateKey](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.ecalgorithm.exportecprivatekey?view=net-10.0#system-security-cryptography-ecalgorithm-exportecprivatekey).
 Encrypt the byte array with `SymmetricCrypto.encrypt`, and save the bytes somewhere.
-You will need that data every time you renew your certificates, and also on every startup of the web server.
+You will need that data every time you renew your certificate, also on each startup of the web server.
 
 ### Certificate Renewal
 
-Load account identity from disk,  decrypt with `SymmetricCrypto.decrypt`, 
-parse with `AccountInfo.deserialise` factory function, and call `iAcmeClient.account`.
+Load account identity from disk, decrypt with `SymmetricCrypto.decrypt`,
+parse with `AccountInfo.deserialise`, and call `iAcmeClient.account`.
 This will get you the `iAcmeAccount` object.
 
 Submit a new order passing DNS names of your domains:
@@ -124,7 +134,7 @@ Issue the new certificate:
 OrderStatus status = await acmeAccount.issueCertificate( oc, certificateKey, CancellationToken.None );
 ```
 
-Save the certificate to disk. The `ECParameters certPublic` argument must be the the public key from the certificateKey.
+Save the certificate to disk. The `ECParameters certPublic` argument must be the public key from the certificateKey.
 
 ```C#
 await acmeClient.downloadCertificate( path, status, certPublic, CancellationToken.None );
@@ -133,10 +143,10 @@ await acmeClient.downloadCertificate( path, status, certPublic, CancellationToke
 ### Certificate Loading
 
 Call `ACME.loadCertificates` function.
-It takes 2 arguments: path to the source file, the certificate key.
+It takes 2 arguments: path to the certificate file, and the key.
 The ECDsa parameter must include the private key.
 
-The outpuut structure contains both the certificate chain, and expiration date:
+The output structure contains both the certificate chain, and expiration date:
 
 ```C#
 /// <summary>A container of certificates loaded from the custom binary format</summary>
