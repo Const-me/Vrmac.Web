@@ -221,3 +221,37 @@ public readonly struct Certificates
 	}
 }
 ```
+
+### Certificate Selector
+
+Kestrel can apply new certificates without restarting the server.
+
+Here’s the necessary boilerplate to accomplish that.
+
+```C#
+sealed class CertificateProvider
+{
+	volatile X509Certificate2? cert = null;
+
+	/// <summary>Setup https listener</summary>
+	public void setupKestrel( KestrelServerOptions options ) =>
+		options.ListenAnyIP( 443, listenOptions );
+
+	void listenOptions( ListenOptions options ) =>
+		options.UseHttps( setupOptions );
+
+	void setupOptions( HttpsConnectionAdapterOptions options ) =>
+		options.ServerCertificateSelector = selectCertificate;
+
+	readonly ConnectionAbortedException refuseConection = new();
+
+	X509Certificate2? selectCertificate( ConnectionContext? context, string? hostname )
+	{
+		X509Certificate2? cert = this.cert;
+		if( cert != null )
+			return cert;
+		context?.Abort( refuseConection );
+		return null;
+	}
+}
+```
