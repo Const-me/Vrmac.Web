@@ -6,15 +6,162 @@ This library implements a .NET 10 client for
 The library is compatible with [Native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/?tabs=windows%2Cnet9plus),
 tested with `TrimMode=Full` trimming option.
 
+## Usage
+
+The main entry point is `AcmeV2.ACME` static class.
+
+Perhaps the most important member of that class is `create` factory function.
+The function fetches and parses [directory](https://www.rfc-editor.org/info/rfc8555/#section-7.1.1) with endpoints,
+and returns an object which acts as a callable proxy for the JSON RPC APIs implemented by the server.
+
+Here’s the steps necessary to obtain and renew these certificates.
+
+### ACME Directory
+
+Create client object like that:
+
+```C#
+using acmeClient = await ACME.create( "https://acme-v02.api.letsencrypt.org/directory", CancellationToken.None );
+```
+
+### Initial Setup
+
+To register a new account, call `await iAcmeClient.register` RPC. The argument is the array of contact e-mails.
+
+Call `AccountInfo.serialise()`. Encrypt the byte array with `SymmetricCrypto.encrypt` as it contains a private key.
+Save the bytes somewhere, you will need that data every time you renew your certificates.
+
+To generate a new certificate key, call `ACME.generateCertificateKey()`.
+Export private key with [ExportECPrivateKey](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.ecalgorithm.exportecprivatekey?view=net-10.0#system-security-cryptography-ecalgorithm-exportecprivatekey).
+Encrypt the byte array with `SymmetricCrypto.encrypt`, and save the bytes somewhere.
+You will need that data every time you renew your certificates, and also on every startup of the web server.
+
+### Certificate Renewal
+
+Load account identity from disk,  decrypt with `SymmetricCrypto.decrypt`, 
+parse with `AccountInfo.deserialise` factory function, and call `iAcmeClient.account`.
+This will get you the `iAcmeAccount` object.
+
+Submit a new order passing DNS names of your domains:
+
+```C#
+OrderChallenges oc = await acmeAccount.newOrder(...)
+```
+
+Serve the magic strings from OrderChallenges.challenges field at the `/.well-known/acme-challenge/{token}` URL of these domains.
+Here’s an example, call the `setupChallenges` method to supply the data.
+
+```C#
+/// <summary>Utility class to serve ACME V2 challenges with Kestrel</summary>
+sealed class AcmeChallenges
+{
+	public AcmeChallenges() { }
+
+	/// <summary>Call on startup to setup the route</summary>
+	public void map( WebApplication app )
+	{
+		app.MapGet( "/.well-known/acme-challenge/{token}", serveChallenge );
+	}
+
+	volatile IReadOnlyDictionary<string, byte[]>? dict = null;
+
+	/// <summary>Setup payload data to serve</summary>
+	public void setupChallenges( IEnumerable<(string, string)> list )
+	{
+		Dictionary<string, byte[]> dict = new();
+		foreach( (string k, string v) in list )
+			dict[ k ] = Encoding.UTF8.GetBytes( v );
+
+		dict.TrimExcess();
+		Interlocked.Exchange( ref this.dict, dict );
+	}
+
+	/// <summary>Clear the payload data</summary>
+	public void clearChallenges() =>
+		Interlocked.Exchange( ref dict, null );
+
+	ValueTask serveChallenge( string token, HttpContext context )
+	{
+		HttpResponse response = context.Response;
+		IReadOnlyDictionary<string, byte[]>? dict = this.dict;
+		byte[]? payload;
+
+		if( null == dict || !dict.TryGetValue( token, out payload ) )
+		{
+			response.StatusCode = StatusCodes.Status404NotFound;
+			return ValueTask.CompletedTask;
+		}
+
+		return response.sendText( payload );
+	}
+}
+```
+
+The extension method:
+
+```C#
+/// <summary>Send the bytes in plain text response</summary>
+public static ValueTask sendText( this HttpResponse response, byte[] content )
+{
+	response.StatusCode = StatusCodes.Status200OK;
+	response.ContentType = "text/plain";
+	response.ContentLength = content.Length;
+	return response.Body.WriteAsync( content );
+}
+```
+
+Validate the domains:
+
+```C#
+await acmeAccount.validateChallenges( oc, someTimeout );
+```
+
+After that function completes successfully, you may clear the challenges.
+
+Issue the new certificate:
+
+```C#
+OrderStatus status = await acmeAccount.issueCertificate( oc, certificateKey, CancellationToken.None );
+```
+
+Save the certificate to disk. The `ECParameters certPublic` argument must be the the public key from the certificateKey.
+
+```C#
+await acmeClient.downloadCertificate( path, status, certPublic, CancellationToken.None );
+```
+
+### Certificate Loading
+
+Call `ACME.loadCertificates` function.
+It takes 2 arguments: path to the source file, the certificate key.
+The ECDsa parameter must include the private key.
+
+The outpuut structure contains both the certificate chain, and expiration date:
+
+```C#
+/// <summary>A container of certificates loaded from the custom binary format</summary>
+public readonly struct Certificates
+{
+	/// <summary>Expiration date of the certificate</summary>
+	/// <remarks>Need that field to figure out when it's time to renew</remarks>
+	public readonly DateTime expiration;
+
+	/// <summary>Certificates in the container.</summary>
+	/// <remarks>The first one is the leaf, and is guaranteed to have the private key.</remarks>
+	public readonly X509Certificate2[] certs;
+
+	internal Certificates( DateTime expiration, X509Certificate2[] certs )
+	{
+		this.expiration = expiration;
+		this.certs = certs;
+	}
+}
+```
+
 ## Technical details
 
 The public API is based on async-await.
 The implementation relies on the thread pool implemented by the .NET runtime.
-
-The main entry point is `AcmeV2.ACME` static class.
-Perhaps the most important member of that class is `create` factory function.
-The function fetches and parses [directory](https://www.rfc-editor.org/info/rfc8555/#section-7.1.1) with endpoints,
-and returns an object which acts as a callable proxy for the JSON RPC APIs implemented by the server.
 
 All cryptography stuff is from the .NET 10 standard library.
 All JSON stuff is implemented using a [source generator](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation)
@@ -43,4 +190,4 @@ Only tested with the free let’s encrypt ACME server.
 
 Only tested with Kestrel web server AOT compiled with .NET 10 SDK.
 My particular server has an AMD64 CPU and runs Alpine Linux,
-albeit none of that should matter as this library is written in idiomatic memory-safe C# with no native interop.
+albeit none of that should matter as this library is written in idiomatic memory-safe C# without native interop or platform intrinsics.
