@@ -1,4 +1,4 @@
-﻿# Vrmac.AcmeV2
+﻿# Vrmac.Acme
 
 This library implements a .NET 10 client for
 [ACME v2](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment#API_version_2) protocol.
