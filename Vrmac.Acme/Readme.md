@@ -6,6 +6,14 @@ This library implements a .NET 10 client for
 The library is compatible with [Native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/?tabs=windows%2Cnet9plus),
 tested with `TrimMode=Full` trimming option.
 
+For many websites, an expired TLS certificate is an epic fail. 
+Make sure to log exceptions thrown by this library rigorously, retry things which fail, 
+log successful renewals, and consider external monitoring.
+
+Although this library has been running flawlessly on my website for 9 months and counting, I can’t guarantee it’s standard compliant or bug free.
+Like any other third-party web service let’s encrypt has technical ability to break things on their side without notice.
+Lastly, no network is 100% reliable.
+
 When evaluating and testing things, consider let’s encrypt [staging environment](https://letsencrypt.org/docs/staging-environment/).
 However, based on my tests these environments are behaving differently; I ran into differences in server logic, not just rate limits.
 Don’t assume a working test with staging guarantees great success with the production ACME server.
@@ -48,9 +56,13 @@ All cryptography stuff is from the .NET 10 standard library.
 All JSON stuff is implemented using a [source generator](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation)
 from the standard library.
 
-## Usage
+Despite the [ACME v2 spec](https://www.rfc-editor.org/info/rfc8555/) is almost 100 pages long,
+the authors didn’t do a great job documenting input validation and error handling.
+See `Signed.signHeader<Header>` method for an illustration.
 
-The main entry point is `AcmeV2.ACME` static class.
+## Integration
+
+The main entry point of the library is `AcmeV2.ACME` static class.
 
 Perhaps the most important member of that class is `create` factory function.
 The function fetches and parses [directory](https://www.rfc-editor.org/info/rfc8555/#section-7.1.1) with endpoints,
