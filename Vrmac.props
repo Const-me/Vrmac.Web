@@ -1,21 +1,8 @@
 <Project>
+	<!-- Settings shared by the .NET 10 projects which compile nuget packages -->
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Authors>Vrmac Softver</Authors>
-		<Company>Vrmac Softver</Company>
-		<Version>1.0</Version>
-		<PackageReadmeFile>Readme.md</PackageReadmeFile>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<None Include="Readme.md" Pack="true" PackagePath="\" />
-		<Compile Include="../AssemblyInfoShared.cs" Link="AssemblyInfoShared.cs" />
-	</ItemGroup>
+	<Import Project="NuGet.props" />
 </Project>

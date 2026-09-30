@@ -4,39 +4,22 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>Latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<RootNamespace>Vrmac</RootNamespace>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<!-- Do not include the generator as a lib dependency -->
 		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<Authors>ConstMe</Authors>
-		<Company>Vrmac Softver</Company>
-		<Version>1.0</Version>
-		<PackageReadmeFile>Readme.md</PackageReadmeFile>
 		<!-- Suppress NU5128 warnings -->
 		<NoWarn>1701;1702;NU5128</NoWarn>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Compile Include="..\AssemblyInfoShared.cs" Link="AssemblyInfoShared.cs" />
-	</ItemGroup>
+	<Import Project="../NuGet.props" />
 
 	<ItemGroup>
 		<!-- Package the generator in the analyzer directory of the nuget package -->
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" PrivateAssets="all" GeneratePathProperty="true" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="Readme.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
 	</ItemGroup>
 
 </Project>
