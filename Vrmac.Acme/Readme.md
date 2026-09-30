@@ -83,19 +83,23 @@ using acmeClient = await ACME.create( "https://acme-v02.api.letsencrypt.org/dire
 
 ### Initial Setup
 
+I recommend doing the steps in this section on a trusted computer, not on your production server.
+Then deploy the account key and the certificate key to production; note the server does not need permissions to write either of these files.
+
 To register a new account, call `await iAcmeClient.register` RPC. The argument is array of contact e-mails.
 
-Call `AccountInfo.serialise()`. Encrypt the byte array with `SymmetricCrypto.encrypt` as it contains a private key.
-Save the bytes somewhere, you will need that data every time you renew your certificates.
+Call `AccountInfo.serialise()`.
+Encrypt the byte array with `SymmetricCrypto.encrypt` as it contains a private key, and ave the encrypted array somewhere.
+You will need that data every time you renew the certificates.
 
 To generate a new certificate key, call `ACME.generateCertificateKey()`.
-Export private key with [ExportECPrivateKey](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.ecalgorithm.exportecprivatekey?view=net-10.0#system-security-cryptography-ecalgorithm-exportecprivatekey).
-Encrypt the byte array with `SymmetricCrypto.encrypt`, and save the bytes somewhere.
-You will need that data every time you renew your certificate, also on each startup of the web server.
+Export the private key with [ExportECPrivateKey](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.ecalgorithm.exportecprivatekey?view=net-10.0#system-security-cryptography-ecalgorithm-exportecprivatekey) method.
+Encrypt the bytes with `SymmetricCrypto.encrypt`, and save the encrypted array somewhere.
+You will need that data every time you renew your certificate, also on each startup of the server.
 
 ### Certificate Renewal
 
-Load account identity from disk, decrypt with `SymmetricCrypto.decrypt`,
+Load account key from disk, decrypt with `SymmetricCrypto.decrypt`,
 parse with `AccountInfo.deserialise`, and call `iAcmeClient.account`.
 This will get you the `iAcmeAccount` object.
 
@@ -179,11 +183,16 @@ Issue the new certificate:
 OrderStatus status = await acmeAccount.issueCertificate( oc, certificateKey, CancellationToken.None );
 ```
 
-Save the certificate to disk. The `ECParameters certPublic` argument must be the public key from the certificateKey.
+Save the certificate to disk.
 
 ```C#
 await acmeClient.downloadCertificate( path, status, certPublic, CancellationToken.None );
 ```
+
+The `string savePath` argument is absolute path to the destination file.
+The server needs permissions to create, write and rename files in the directory containing that file.
+
+The `ECParameters certPublic` argument must be public key from the certificateKey.
 
 ### Certificate Loading
 
