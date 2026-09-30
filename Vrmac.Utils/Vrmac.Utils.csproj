@@ -2,6 +2,7 @@
 	<Import Project="../Vrmac.props" />
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Utils</PackageProjectUrl>
+		<Description>Shared utilities consumed by other `Vrmac.*` packages</Description>
 		<RootNamespace>Vrmac</RootNamespace>
 	</PropertyGroup>
 </Project>

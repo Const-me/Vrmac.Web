@@ -2,5 +2,6 @@
 	<Import Project="../Vrmac.props" />
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.RateLimits</PackageProjectUrl>
+		<Description>Rate limiters for network requests</Description>
 	</PropertyGroup>
 </Project>

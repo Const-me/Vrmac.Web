@@ -3,6 +3,7 @@
 	<Import Project="../Vrmac.props" />
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Pwned</PackageProjectUrl>
+		<Description>Library to test passwords against “Have I Been Pwned?” dataset maintained by Troy Hunt.</Description>
 	</PropertyGroup>
 
 	<PropertyGroup>

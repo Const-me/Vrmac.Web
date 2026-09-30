@@ -4,6 +4,7 @@
 	<PropertyGroup>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.GeoIP</PackageProjectUrl>
+		<Description>Efficiently resolves IP addresses into broad geographic regions</Description>
 	</PropertyGroup>
 
 </Project>

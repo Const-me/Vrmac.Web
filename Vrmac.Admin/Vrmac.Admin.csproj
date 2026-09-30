@@ -2,6 +2,7 @@
 	<Import Project="../Vrmac.props" />
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Admin</PackageProjectUrl>
+		<Description>Building blocks to remotely operate Linux servers over SSH</Description>
 	</PropertyGroup>
 
 	<ItemGroup>

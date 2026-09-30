@@ -2,6 +2,7 @@
 	<Import Project="../Vrmac.props" />
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Html</PackageProjectUrl>
+		<Description>Runtime support for web pages served from HTML templates</Description>
 	</PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
