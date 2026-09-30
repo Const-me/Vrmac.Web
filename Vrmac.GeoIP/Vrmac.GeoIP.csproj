@@ -2,12 +2,8 @@
 	<Import Project="../Vrmac.props" />
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
 		<InvariantGlobalization>true</InvariantGlobalization>
-		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.GeoIP</PackageProjectUrl>
 	</PropertyGroup>
 
 </Project>

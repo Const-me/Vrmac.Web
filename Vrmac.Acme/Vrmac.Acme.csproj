@@ -1,5 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="../Vrmac.props" />
+	<PropertyGroup>
+		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Acme</PackageProjectUrl>
+	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.0" />
 	</ItemGroup>

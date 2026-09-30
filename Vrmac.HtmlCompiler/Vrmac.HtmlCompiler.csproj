@@ -15,6 +15,9 @@
 	</PropertyGroup>
 
 	<Import Project="../NuGet.props" />
+	<PropertyGroup>
+		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.HtmlCompiler</PackageProjectUrl>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<!-- Package the generator in the analyzer directory of the nuget package -->

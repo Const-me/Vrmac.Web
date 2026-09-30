@@ -1,5 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="../Vrmac.props" />
+	<PropertyGroup>
+		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Html</PackageProjectUrl>
+	</PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="System.IO.Hashing" Version="10.0.12" />

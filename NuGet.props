@@ -6,11 +6,14 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>ConstMe</Authors>
 		<Company>Vrmac Softver</Company>
 		<Version>1.0</Version>
 		<PackageReadmeFile>Readme.md</PackageReadmeFile>
+		<Copyright>© Vrmac Softver, 2026</Copyright>
+		<RepositoryUrl>https://github.com/Const-me/Vrmac.Web.git</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>
