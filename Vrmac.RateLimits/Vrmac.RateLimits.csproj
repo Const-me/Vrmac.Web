@@ -3,5 +3,6 @@
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.RateLimits</PackageProjectUrl>
 		<Description>Rate limiters for network requests</Description>
+		<PackageTags>rate-limit rate-limiting rate-limiter</PackageTags>
 	</PropertyGroup>
 </Project>

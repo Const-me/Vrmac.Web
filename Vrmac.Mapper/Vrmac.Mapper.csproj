@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Mapper</PackageProjectUrl>
 		<Description>Micro-ORM for MariaDB heavily inspired by Dapper</Description>
+		<PackageTags>mariadb mysql database ORM</PackageTags>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="MySqlConnector" Version="2.5.0" />

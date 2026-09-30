@@ -18,6 +18,7 @@
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.HtmlCompiler</PackageProjectUrl>
 		<Description>Incremental code generator to compile HTML templates into C# partial types.</Description>
+		<PackageTags>WebPages</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>

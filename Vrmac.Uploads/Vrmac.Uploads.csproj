@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Uploads</PackageProjectUrl>
 		<Description>Kestrel-based server of the resumable file upload protocol</Description>
+		<PackageTags>aspnetcore AspNet upload</PackageTags>
 	</PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />

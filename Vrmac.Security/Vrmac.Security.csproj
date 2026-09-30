@@ -4,6 +4,7 @@
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Const-me/Vrmac.Web/tree/master/Vrmac.Security</PackageProjectUrl>
 		<Description>Cryptography-related functions built on top of the standard library</Description>
+		<PackageTags>Security</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
