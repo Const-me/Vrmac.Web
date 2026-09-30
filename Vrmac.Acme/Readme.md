@@ -3,15 +3,50 @@
 This library implements a .NET 10 client for
 [ACME v2](https://en.wikipedia.org/wiki/Automatic_Certificate_Management_Environment#API_version_2) protocol.
 
-The library only supports [http-01](https://www.rfc-editor.org/info/rfc8555/#section-8.3) verification.
-If you need wildcard certificates, consider forking this library and implementing the missing feature.
-
 The library is compatible with [Native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/?tabs=windows%2Cnet9plus),
 tested with `TrimMode=Full` trimming option.
 
 When evaluating and testing things, consider let’s encrypt [staging environment](https://letsencrypt.org/docs/staging-environment/).
 However, based on my tests these environments are behaving differently; I ran into differences in server logic, not just rate limits.
 Don’t assume a working test with staging guarantees great success with the production ACME server.
+
+## Rationale
+
+I have developed this library instead of using some pre-existing stuff for the following reasons.
+
+* Standalone ACME clients write certificates to disk and expect the web server to notice
+and reload them, via a restart or a reload hook.
+I wanted to update certificates without restarting the web server.
+
+* My web server runs under a service account with just barely sufficient permissions.
+For security reasons, I wanted ACME client to run under the same service account.
+
+* When I searched for an ACME client library, the ones I was able to find
+were based on [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/) which breaks down after the .NET 10 AOT trimmer.
+Also some of them bring their own crypto dependency,
+like [Bouncy Castle](https://en.wikipedia.org/wiki/Bouncy_Castle_(cryptography)),
+even though the .NET 10 standard library comes with all cryptography stuff necessary for the use case.
+
+## Limitations
+
+Only tested with the free let’s encrypt ACME server.
+
+Only tested with Kestrel web server AOT compiled with .NET 10 SDK.
+My particular server has an AMD64 CPU and runs Alpine Linux,
+albeit none of that should matter as this library is written in idiomatic memory-safe C# without native interop or platform intrinsics.
+
+The library only supports [http-01](https://www.rfc-editor.org/info/rfc8555/#section-8.3) verification.
+If you need wildcard certificates,
+consider forking this library adding support for [dns-01](https://www.rfc-editor.org/info/rfc8555/#section-8.4) verification.
+
+## Technical details
+
+The public API is based on async-await.
+The implementation relies on the thread pool implemented by the .NET runtime.
+
+All cryptography stuff is from the .NET 10 standard library.
+All JSON stuff is implemented using a [source generator](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation)
+from the standard library.
 
 ## Usage
 
@@ -68,10 +103,8 @@ sealed class AcmeChallenges
 	public AcmeChallenges() { }
 
 	/// <summary>Call on startup to setup the route</summary>
-	public void map( WebApplication app )
-	{
+	public void map( WebApplication app ) =>
 		app.MapGet( "/.well-known/acme-challenge/{token}", serveChallenge );
-	}
 
 	volatile IReadOnlyDictionary<string, byte[]>? dict = null;
 
@@ -167,37 +200,3 @@ public readonly struct Certificates
 	}
 }
 ```
-
-## Technical details
-
-The public API is based on async-await.
-The implementation relies on the thread pool implemented by the .NET runtime.
-
-All cryptography stuff is from the .NET 10 standard library.
-All JSON stuff is implemented using a [source generator](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation)
-from the standard library.
-
-## Rationale
-
-I have developed this library instead of using some pre-existing stuff for the following reasons.
-
-* Standalone ACME clients write certificates to disk and expect the web server to notice
-and reload them, via a restart or a reload hook.
-I wanted to update certificates without restarting the web server.
-
-* My web server runs under a service account with just barely sufficient permissions.
-For security reasons, I wanted ACME client to run under the same service account.
-
-* When I searched for an ACME client library, the ones I was able to find
-were based on [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/) which breaks down after the .NET 10 AOT trimmer.
-Also some of them bring their own crypto dependency,
-like [Bouncy Castle](https://en.wikipedia.org/wiki/Bouncy_Castle_(cryptography)),
-even though the .NET 10 standard library comes with all cryptography stuff necessary for the use case.
-
-## Limitations
-
-Only tested with the free let’s encrypt ACME server.
-
-Only tested with Kestrel web server AOT compiled with .NET 10 SDK.
-My particular server has an AMD64 CPU and runs Alpine Linux,
-albeit none of that should matter as this library is written in idiomatic memory-safe C# without native interop or platform intrinsics.
