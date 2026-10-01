@@ -15,10 +15,10 @@ public enum eRegion: byte
 	/// <summary>Europe</summary>
 	EU,
 	/// <summary>Countries on the south and east sides of the Mediterranean sea</summary>
-	/// <remarks>Despite they span over both Africa and Asia continents well connected to the EU, many submarine cables</remarks>
+	/// <remarks>Although they span Africa and Asia, well connected to the EU: many submarine cables</remarks>
 	NA,
 	/// <summary>Sub-Saharan Africa</summary>
-	/// <remarks>Sahara is a showstopper, no internet infrastructure</remarks>
+	/// <remarks>Sahara is a showstopper, little overland connectivity to the north</remarks>
 	SSA,
 	/// <summary>Firewalled Russia and Belarus</summary>
 	RU,
