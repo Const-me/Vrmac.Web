@@ -183,7 +183,8 @@ sealed class TreeNode
 	public void removeAllNodes( BitArray processed, TreeNode node, ref int removed )
 	{
 		if( !setBit( processed, this ) )
-			throw new ApplicationException( "Detected a tree cycle" );
+			return;
+
 		if( left is TreeNode leftNode )
 		{
 			if( leftNode != node )
