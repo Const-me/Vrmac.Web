@@ -13,6 +13,7 @@ sealed class TreeData
 	public readonly TreeNode root;
 	/// <summary>Conceptually an unordered set of tree nodes, but way more efficient</summary>
 	readonly BitArray processed;
+	public int countNodes => processed.Count;
 
 	TreeNode findNode( IEnumerable<bool> bits )
 	{
