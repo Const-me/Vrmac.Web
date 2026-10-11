@@ -1,4 +1,5 @@
-﻿namespace Vrmac.Admin;
+﻿using System.Reflection;
+namespace Vrmac.Admin;
 
 /// <summary>If you implement this interface in your menu class,<br/>
 /// <see cref="MenuRunner" /> will check the property after each command,<br/>and quit the menu when it becomes true</summary>
@@ -61,6 +62,8 @@ public static class MenuRunner
 			}
 			catch( Exception ex )
 			{
+				if( ex is TargetInvocationException ti && ti.InnerException != null )
+					ex = ti.InnerException;
 				Print.error( ex.Message );
 			}
 			return true;
