@@ -3,6 +3,21 @@ using Renci.SshNet.Common;
 using System.Text;
 namespace Vrmac.Admin;
 
+/// <summary>Flags to adjust handling of SSH commands</summary>
+[Flags]
+public enum eCommandFlags: byte
+{
+	/// <summary>No special flags</summary>
+	None = 0,
+
+	/// <summary>Do not translate non-zero exit codes into .NET exceptions</summary>
+	IgnoreStatus = 1,
+
+	/// <summary>Do not print the command text locally</summary>
+	/// <remarks>Remote output and standard error streams are still forwarded to the local console</remarks>
+	SkipLocalEcho = 2,
+}
+
 /// <summary>Utility functions for SSH remoting stuff</summary>
 public static class SSH
 {
@@ -192,17 +207,25 @@ public static class SSH
 
 	/// <summary>Execute remote command over the SSH</summary>
 	/// <remarks>By default, the function translates non-zero exit codes into exceptions</remarks>
-	public static async Task command( this SshClient client, string commandText, bool ignoreStatus = false )
+	public static async Task command( this SshClient client, string commandText, eCommandFlags flags = eCommandFlags.None )
 	{
-		Print.command( commandText );
+		if( 0 == ( flags & eCommandFlags.SkipLocalEcho ) )
+			Print.command( commandText );
+
 		using Command cmd = new( client, commandText );
 		await cmd.execute();
 		int code = cmd.exitStatus;
 		if( code == 0 )
 			return;
-		if( !ignoreStatus )
+
+		if( 0 == ( flags & eCommandFlags.IgnoreStatus ) )
 			throw new ApplicationException( $"The command {commandText} failed with status {code}" );
 	}
+
+	/// <summary>Execute remote command over the SSH</summary>
+	/// <remarks>By default, the function translates non-zero exit codes into exceptions</remarks>
+	public static Task command( this SshClient client, string commandText, bool ignoreStatus ) =>
+		command( client, commandText, ignoreStatus ? eCommandFlags.IgnoreStatus : eCommandFlags.None );
 
 	/// <summary>Execute remote command over the SSH, and return exit code without translating into exception</summary>
 	public static async Task<int> commandStatus( this SshClient client, string commandText )

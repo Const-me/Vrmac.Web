@@ -8,11 +8,15 @@ public sealed class ConnectionCreds
 {
 	readonly string host;
 	readonly int port;
-	readonly string login;
+	/// <summary>Account name</summary>
+	public string login { get; }
 	readonly byte[] keyBytes;
 	readonly string? password;
 	/// <summary>True when the host is across the internets as opposed to being on the same LAN</summary>
 	public bool isRemote { get; }
+
+	/// <summary>A string for logs and debugger; note it includes account name.</summary>
+	public override string ToString() => $"{login}@{host}:{port}";
 
 	internal ConnectionCreds( string host, int port,
 		string login, byte[] keyBytes, string? password )
