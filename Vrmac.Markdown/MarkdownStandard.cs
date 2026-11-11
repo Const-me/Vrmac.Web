@@ -102,6 +102,7 @@ public static class MarkdownStandard
 			bool first = true;
 			Span<byte> indent = stackalloc byte[ indentLevel + 1 ];
 			indent.Fill( (byte)'\t' );
+			int preLevel = 0;
 
 			foreach( ReadOnlyMemory<byte> line in LineParser.parse( arr.AsMemory( 0, writtenBytes ) ) )
 			{
@@ -115,8 +116,12 @@ public static class MarkdownStandard
 					ms.newLine();
 					first = false;
 				}
-				ms.write( indent );
+				// Disable leading indentation when inside a <pre> section
+				if( 0 == preLevel )
+					ms.write( indent );
 				ms.write( line );
+				// Update the <pre> nesting counter
+				preLevel += preCounter( line.Span );
 				ms.newLine();
 			}
 
@@ -132,5 +137,37 @@ public static class MarkdownStandard
 		{
 			pool.Return( arr );
 		}
+	}
+
+	/// <summary>Count changes in <c>&lt;pre&gt;</c> nesting levels in the line of HTML</summary>
+	static int preCounter( ReadOnlySpan<byte> span )
+	{
+		int increment = 0;
+		while( true )
+		{
+			int idxOpen = span.IndexOf( "<pre>"u8 );
+			int idxClose = span.IndexOf( "</pre>"u8 );
+			byte flag = idxOpen >= 0 ? (byte)1 : (byte)0;
+			flag |= idxClose >= 0 ? (byte)2 : (byte)0;
+			switch( flag )
+			{
+				default:
+					return increment;
+				case 1:
+					increment++;
+					span = span.Slice( idxOpen + 5 );
+					break;
+				case 2:
+					increment--;
+					span = span.Slice( idxClose + 6 );
+					break;
+				case 3:
+					if( idxOpen < idxClose )
+						goto case 1;
+					else
+						goto case 2;
+			}
+		}
+
 	}
 }
